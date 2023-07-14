@@ -21,7 +21,8 @@ struct FileArg {
 #[derive(Subcommand, Debug)]
 enum Commands {
     CountRecipients(FileArg),
-    CountAttachments(FileArg)
+    CountAttachments(FileArg),
+    EmailDate(FileArg)
 }
 
 
@@ -30,6 +31,7 @@ fn main() {
     match &args.command {
         Commands::CountRecipients(_cmd_args) => { count_recipients(args.file)}
         Commands::CountAttachments(_cmd_args) => { count_attachments(args.file) }
+        Commands::EmailDate(_cmd_args) => { email_date(args.file) }
     }
 }
 
@@ -58,6 +60,12 @@ fn print_attachments(email_path: &Option<PathBuf>, email: &Message, nb_attachmen
             print_attachments(email_path, attachment.message().unwrap(), nb_attachments, total_size);
         }
     }
+}
+
+fn email_date(email_path: Option<PathBuf>) {
+    let email_content = fs::read(email_path.as_ref().unwrap()).expect("Failed to read email file");
+    let email = &Message::parse(&email_content).unwrap();
+    println!("{:?} {}", email_path.as_ref().unwrap(), email.date().unwrap().to_rfc3339());
 }
 
 fn size(addr_list: &HeaderValue) -> usize {

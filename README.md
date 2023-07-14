@@ -7,6 +7,7 @@ For a Life Cycle Assessment about mail we needed to parse a lot of emails and ma
 
 * number of recipients (to, cc)
 * number and size of attachments
+* print the date in a standard format (rfc3339)
 
 We first used python mail module, but it was too slow (days).
 
