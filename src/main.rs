@@ -36,17 +36,15 @@ fn main() {
 fn count_recipients(email: Option<PathBuf>) {
     let email_content = fs::read(email.as_ref().unwrap()).expect("Failed to read email file");
     let mail = Message::parse(&email_content).expect("Failed to parse email file");
-    let to_size = match mail.to() {
+    println!("{:?} {:?}", email.as_ref().unwrap(), size(mail.to()) + size(mail.cc()));
+}
+
+fn size(addr_list: &HeaderValue) -> usize {
+    match addr_list {
         HeaderValue::AddressList(addresses) => addresses.len(),
         HeaderValue::Address(_addresses) => 1,
         _ => 0,
-    };
-    let cc_size = match mail.cc() {
-        HeaderValue::AddressList(addresses) => addresses.len(),
-        HeaderValue::Address(_addresses) => 1,
-        _ => 0,
-    };
-    println!("{:?} {:?}", email.as_ref().unwrap(), to_size + cc_size);
+    }
 }
 
 fn count_attachments(email: Option<PathBuf>) {
