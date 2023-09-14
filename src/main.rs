@@ -20,6 +20,8 @@ struct FileArg {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
+    DisplayRecipients(FileArg),
+    DisplaySender(FileArg),
     CountRecipients(FileArg),
     CountAttachments(FileArg),
     EmailDate(FileArg)
@@ -29,9 +31,35 @@ enum Commands {
 fn main() {
     let args = Cli::parse();
     match &args.command {
+        Commands::DisplayRecipients(_cmd_args) => {display(args.file, vec!["cc", "to", "bcc"])}
+        Commands::DisplaySender(_cmd_args) => {display(args.file, vec!["from"])}
         Commands::CountRecipients(_cmd_args) => { count_recipients(args.file)}
         Commands::CountAttachments(_cmd_args) => { count_attachments(args.file) }
         Commands::EmailDate(_cmd_args) => { email_date(args.file) }
+    }
+}
+
+fn display(email_path: Option<PathBuf>, fields: Vec<&str>) {
+    let email_content = fs::read(email_path.as_ref().unwrap()).expect("Failed to read email file");
+    let email = Message::parse(&email_content).expect("Failed to parse email file");
+    for field in fields {
+        match email.header(field).unwrap_or_else(|| {
+            println!("no header value for {}", field);
+            &HeaderValue::Empty
+        }) {
+            HeaderValue::AddressList(l) => {
+                for addr in l {
+                    println!("{:?} {:?}", email_path, addr)
+                }
+            },
+            HeaderValue::Address(addr) => {
+                println!("{:?} {:?}", email_path, addr)
+            }
+            HeaderValue::Empty => {}
+            f => {
+                println!("{:?} {:?}", email_path, f)
+            }
+        }
     }
 }
 
