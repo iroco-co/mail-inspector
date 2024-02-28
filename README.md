@@ -18,9 +18,12 @@ We first used python mail module, but it was too slow (days).
 Usage: mail-inspector [FILE] <COMMAND>
 
 Commands:
-  count-recipients   
-  count-attachments  
-  help               Print this message or the help of the given subcommand(s)
+  display-recipients  
+  display-sender      
+  count-recipients    
+  count-attachments   
+  email-date          
+  help                Print this message or the help of the given subcommand(s)
 
 Arguments:
   [FILE]  
